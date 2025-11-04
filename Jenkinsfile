@@ -1,10 +1,5 @@
 pipeline {
-    // ✅ Define agent properly with custom workspace
-    agent {
-        any {
-            customWorkspace '/home/jenkins_home/workspace/Integration_webapp'
-        }
-    }
+    agent any
 
     environment {
         IMAGE_NAME = "webimage"
@@ -14,21 +9,21 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                echo "📦 Cloning repository..."
+                echo "Cloning repository..."
                 git branch: 'main', url: 'https://github.com/Pintaram-M-ML/Webapps.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                echo "🐳 Building Docker image..."
+                echo "Building Docker image..."
                 sh 'docker build -t ${IMAGE_NAME}:latest .'
             }
         }
 
         stage('Run Docker Container') {
             steps {
-                echo "🚀 Running Docker container..."
+                echo "Running Docker container..."
                 sh '''
                     docker stop ${CONTAINER_NAME} || true
                     docker rm ${CONTAINER_NAME} || true
