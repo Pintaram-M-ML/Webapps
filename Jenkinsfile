@@ -1,9 +1,18 @@
 pipeline {
-    agent any
+    agent {
+        // ✅ Use any node, but specify a custom workspace
+        any
+    }
 
     environment {
         IMAGE_NAME = "webimage"
         CONTAINER_NAME = "webcontainer"
+        WORKSPACE_PATH = "/home/jenkins_home/workspace/Integration_webapp"
+    }
+
+    options {
+        // Ensure Jenkins uses the custom workspace path
+        customWorkspace "${WORKSPACE_PATH}"
     }
 
     stages {
