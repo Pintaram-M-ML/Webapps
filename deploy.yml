@@ -1,12 +1,25 @@
 - name: Deploy web container remotely
-  hosts: webservers
+  hosts: remote
   become: true
   tasks:
-    - name: Stop existing container
+    - name: Stop existing container (if running)
       shell: docker stop webcontainer || true
 
-    - name: Remove old container
+    - name: Remove old container (if exists)
       shell: docker rm webcontainer || true
 
-    - name: Run updated container
+    - name: Copy application files to remote server
+      copy:
+        src: ./Web/
+        dest: /home/azureuser/Web/
+    
+    - name: Copy Dockerfile to remote server
+      copy:
+        src: ./Dockerfile
+        dest: /home/azureuser/Dockerfile
+
+    - name: Build Docker image on remote
+      shell: docker build -t webimage:latest /home/azureuser/
+
+    - name: Run new web container
       shell: docker run -d --name webcontainer -p 8081:80 webimage:latest
