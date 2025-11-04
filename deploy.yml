@@ -10,5 +10,4 @@
     - name: Remove old container
       shell: docker rm webcontainer || true
 
-    - name: Run updated container
-      shell: docker run -d --name webcontainer -p 8081:80 webimage:latest
+    
