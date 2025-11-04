@@ -2,6 +2,7 @@
   hosts: remote
   become: true
   tasks:
+
     - name: Stop existing container (if running)
       shell: docker stop webcontainer || true
 

@@ -4,6 +4,9 @@ pipeline {
     environment {
         IMAGE_NAME = "webimage"
         CONTAINER_NAME = "webcontainer"
+        REMOTE_HOST = "4.194.217.29"
+        REMOTE_PATH =  "/var/lib/jenkins/.ssh/id_rsa"
+        REMOTE_USER = "azureuser"
     }
 
     stages {
