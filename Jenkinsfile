@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        node {
-            // ✅ Use workspace inside /home so Docker can access it
-            customWorkspace '/home/jenkins_home/workspace/Integration_webapp'
-        }
-    }
+    agent any
 
     environment {
         IMAGE_NAME = "webimage"
