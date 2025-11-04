@@ -1,8 +1,6 @@
----
 - name: Deploy web container remotely
   hosts: webservers
-  become: yes
-
+  become: true
   tasks:
     - name: Stop existing container
       shell: docker stop webcontainer || true
@@ -10,4 +8,5 @@
     - name: Remove old container
       shell: docker rm webcontainer || true
 
-    
+    - name: Run updated container
+      shell: docker run -d --name webcontainer -p 8081:80 webimage:latest
