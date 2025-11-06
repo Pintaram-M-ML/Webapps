@@ -1,13 +1,13 @@
 apiVersion: v1
-kind: Service
+kind: service
 metadata:
-  name: my-app-service
+  name: my-app-deployment
 spec:
   selector:
-    app: my-app
+      app: my-app
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 80
-      nodePort: 30080
-  type: NodePort
+      port: 80               # Port inside the cluster
+      targetPort: 80         # Port your container listens on
+      nodePort: 30080        # External port (optional, can remove to auto-assign)
+  type: NodePort             # Exposes the app outside the cluster
