@@ -52,12 +52,12 @@ pipeline {
                 '''
             }
         }
-        // stage('Deploy using Ansible') {
-        //     steps {
-        //         echo "⚙️ Deploying container to remote server via Ansible..."
-        //         sh 'ansible-playbook -i inventory.ini deploy.yml'
-        //     }
-        // }
+        stage('Deploy using Ansible') {
+            steps {
+                echo "⚙️ Deploying container to remote server via Ansible..."
+                sh 'ansible-playbook -i inventory.ini deploy.yml'
+            }
+        }
 
         stage('Post Deployment') {
             steps {

@@ -1,59 +1,19 @@
-- name: Deploy web container remotely
-  hosts: remote
-  become: true
+---
+- name: Deploy app via Helm
+  hosts: web
+  become: yes
   tasks:
+    - name: Print deployment info
+      debug:
+        msg: "Deploying app using Helm and Docker image"
 
-    - name: Ensure apt packages are up to date
+    - name: Ensure NGINX is installed
       apt:
-        update_cache: yes
-
-    - name: Install required dependencies
-      apt:
-        name:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - software-properties-common
-        state: present
-
-    - name: Add Docker GPG key
-      shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-
-    - name: Add Docker repository
-      apt_repository:
-        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
-        state: present
-
-    - name: Install Docker
-      apt:
-        name: docker-ce
+        name: nginx
         state: present
         update_cache: yes
 
-    - name: Start and enable Docker service
-      systemd:
-        name: docker
-        state: started
-        enabled: yes
-
-    - name: Stop existing container (if running)
-      shell: docker stop webcontainer || true
-
-    - name: Remove old container (if exists)
-      shell: docker rm webcontainer || true
-
-    - name: Copy application files to remote server
+    - name: Copy latest Docker image details
       copy:
-        src: ./Web/
-        dest: /home/azureuser/Web/
-    
-    - name: Copy Dockerfile to remote server
-      copy:
-        src: ./Dockerfile
-        dest: /home/azureuser/Dockerfile
-
-    - name: Build Docker image on remote
-      shell: docker build -t webimage:latest /home/azureuser/
-
-    - name: Run new web container
-      shell: docker run -d --name webcontainer -p 8081:80 webimage:latest
+        content: "Image: pintaram369/my-app-image:{{ lookup('env','BUILD_NUMBER') }}"
+        dest: /tmp/image_info.txt
