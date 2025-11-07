@@ -18,6 +18,28 @@ pipeline {
             }
         }
 
+        stage('Azure Login & Get AKS Credentials') {
+            steps {
+                echo "🔑 Logging into Azure and configuring AKS context..."
+                withCredentials([azureServicePrincipal(
+                    credentialsId: 'jenkins-sp',
+                    subscriptionIdVariable: 'AZ_SUBSCRIPTION_ID',
+                    clientIdVariable: 'AZ_CLIENT_ID',
+                    clientSecretVariable: 'AZ_CLIENT_SECRET',
+                    tenantIdVariable: 'AZ_TENANT_ID'
+                )]) {
+                    sh '''
+                        az login --service-principal \
+                            -u $AZ_CLIENT_ID \
+                            -p $AZ_CLIENT_SECRET \
+                            --tenant $AZ_TENANT_ID
+                        az aks get-credentials --resource-group MyResourceGroupSEA --name myAKSCluster
+                    '''
+                }
+            }
+            }
+
+
         stage('Build Docker Image') {
             steps {
                 echo "🐳 Building Docker image..."
