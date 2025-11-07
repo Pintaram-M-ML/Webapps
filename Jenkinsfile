@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         IMAGE_NAME = "pintaram369/my-app-image"
-        IMAGE_TAG = "latest"
+        IMAGE_TAG = "${BUILD_NUMBER}"
         HELM_RELEASE = "my-app"
         HELM_CHART_PATH = "./helm-chart"   // path to your Helm chart folder
         DOCKER_CREDENTIALS_ID = "dockerhub-credentials"
