@@ -1,6 +1,6 @@
 ---
 - name: Deploy app via Helm
-  hosts: web
+  hosts: remote
   become: yes
   tasks:
     - name: Print deployment info
