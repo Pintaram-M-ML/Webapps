@@ -18,26 +18,34 @@ pipeline {
             }
         }
 
-        stage('Azure Login & Get AKS Credentials') {
-            steps {
-                echo "🔑 Logging into Azure and configuring AKS context..."
-                withCredentials([azureServicePrincipal(
-                    credentialsId: 'jenkins-sp',
-                    subscriptionIdVariable: 'AZ_SUBSCRIPTION_ID',
-                    clientIdVariable: 'AZ_CLIENT_ID',
-                    clientSecretVariable: 'AZ_CLIENT_SECRET',
-                    tenantIdVariable: 'AZ_TENANT_ID'
-                )]) {
-                    sh '''
-                        az login --service-principal \
-                            -u $AZ_CLIENT_ID \
-                            -p $AZ_CLIENT_SECRET \
-                            --tenant $AZ_TENANT_ID
-                        az aks get-credentials --resource-group MyResourceGroupSEA --name myAKSCluster
-                    '''
-                }
-            }
-            }
+       stage('Login to Azure') {
+    steps {
+        withCredentials([
+            string(credentialsId: 'AZ_CLIENT_ID', variable: 'AZ_CLIENT_ID'),
+            string(credentialsId: 'AZ_CLIENT_SECRET', variable: 'AZ_CLIENT_SECRET'),
+            string(credentialsId: 'AZ_TENANT_ID', variable: 'AZ_TENANT_ID'),
+            string(credentialsId: 'AZ_SUBSCRIPTION_ID', variable: 'AZ_SUBSCRIPTION_ID')
+        ]) {
+            sh '''
+                echo "🔑 Logging into Azure..."
+                mkdir -p /tmp/azure
+                export AZURE_CONFIG_DIR=/tmp/azure
+
+                az login --service-principal \
+                    -u $AZ_CLIENT_ID \
+                    -p $AZ_CLIENT_SECRET \
+                    --tenant $AZ_TENANT_ID \
+                    --output none \
+                    --only-show-errors
+
+                az account set --subscription $AZ_SUBSCRIPTION_ID
+                echo "✅ Azure login successful"
+            '''
+        }
+    }
+}
+
+
 
 
         stage('Build Docker Image') {
