@@ -60,25 +60,35 @@ pipeline {
             }
         }
 
-        stage('Deploy with Helm') {
-            steps {
-                echo "🚀 Deploying application with Helm..."
-                sh '''
-                    helm upgrade --install ${HELM_RELEASE} ${HELM_CHART_PATH} \
-                        --namespace ${KUBE_NAMESPACE} \
-                        --set image.repository=${IMAGE_NAME} \
-                        --set image.tag=${IMAGE_TAG} \
-                        --wait --timeout 120s
-                '''
-            }
-        }
-        stage('Deploy using Ansible') {
-            steps {
-                echo "⚙️ Deploying container to remote server via Ansible..."
-                sh 'ansible-playbook -i inventory.ini deploy.yml'
-            }
-        }
+      stage('Set kubeconfig') {
+    steps {
+        echo "🔧 Setting KUBECONFIG for Jenkins..."
+        sh 'export KUBECONFIG=/var/lib/jenkins/.kube/config && kubectl get nodes'
+    }
+}
 
+stage('Deploy with Helm') {
+    steps {
+        echo "🚀 Deploying application with Helm..."
+        sh '''
+            export KUBECONFIG=/var/lib/jenkins/.kube/config
+            helm upgrade --install ${HELM_RELEASE} ${HELM_CHART_PATH} \
+                --namespace ${KUBE_NAMESPACE} \
+                --set image.repository=${IMAGE_NAME} \
+                --set image.tag=${IMAGE_TAG} \
+                --wait --timeout 120s
+        '''
+    }
+}
+
+stage('Deploy using Ansible') {
+    steps {
+        echo "⚙️ Deploying container via Ansible..."
+        sh '''
+            export KUBECONFIG=/var/lib/jenkins/.kube/config
+            ansible-playbook -i inventory.ini deploy.yml
+        '''
+    }
         stage('Post Deployment') {
             steps {
                 echo "✅ Application deployed successfully using Jenkins + Ansible!"
