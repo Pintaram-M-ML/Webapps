@@ -60,7 +60,7 @@ pipeline {
             }
         }
 
-      stage('Set kubeconfig') {
+        stage('Set kubeconfig') {
     steps {
         echo "🔧 Setting KUBECONFIG for Jenkins..."
         sh 'export KUBECONFIG=/var/lib/jenkins/.kube/config && kubectl get nodes'
@@ -89,6 +89,8 @@ stage('Deploy using Ansible') {
             ansible-playbook -i inventory.ini deploy.yml
         '''
     }
+}
+
         stage('Post Deployment') {
             steps {
                 echo "✅ Application deployed successfully using Jenkins + Ansible!"
