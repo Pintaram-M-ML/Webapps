@@ -83,14 +83,22 @@ stage('Deploy with Helm') {
 
 stage('Deploy using Ansible') {
     steps {
+        echo "⚙️ Checking Jenkins SSH environment..."
+        sh '''
+            whoami
+            ls -l /var/lib/jenkins/.ssh
+        '''
+        
         echo "⚙️ Deploying container via Ansible..."
         sh '''
             export KUBECONFIG=/var/lib/jenkins/.kube/config
             export ANSIBLE_HOST_KEY_CHECKING=False
-            ansible-playbook -i inventory.ini deploy.yml
+            chmod 600 /var/lib/jenkins/.ssh/id_rsa
+            ansible-playbook -i inventory.ini deploy.yml -vvv
         '''
     }
 }
+
 
 
 
