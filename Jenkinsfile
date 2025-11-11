@@ -85,12 +85,13 @@ stage('Deploy using Ansible') {
     steps {
         echo "⚙️ Deploying container via Ansible..."
         sh '''
+            export KUBECONFIG=/var/lib/jenkins/.kube/config
             export ANSIBLE_HOST_KEY_CHECKING=False
-            export HOME=/var/lib/jenkins
             ansible-playbook -i inventory.ini deploy.yml
         '''
     }
 }
+
 
 
         stage('Post Deployment') {
