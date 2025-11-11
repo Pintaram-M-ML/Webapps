@@ -85,11 +85,20 @@ stage('Deploy using Ansible') {
     steps {
         echo "⚙️ Deploying container via Ansible..."
         sh '''
+            set -e  # stop the pipeline on any error
+
+            # Ensure KUBECONFIG is set for Ansible to use Kubernetes if needed
             export KUBECONFIG=/var/lib/jenkins/.kube/config
-            ansible-playbook -i inventory.ini deploy.yml
+
+            # Optional: Disable strict host key checking (prevents host key prompt)
+            export ANSIBLE_HOST_KEY_CHECKING=False
+
+            # Run the Ansible playbook
+            ansible-playbook -i inventory.ini deploy.yml -u azureuser
         '''
     }
 }
+
 
         stage('Post Deployment') {
             steps {
